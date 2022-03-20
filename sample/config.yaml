@@ -15,3 +15,14 @@ shear:
   min_g: 0.0
   max_g: 0.2
 
+visible:
+  blue_lim: 330 # nm
+  red_lim: 770 # nm
+  lines:
+    'halpha': 656.3 # nm
+    'O2': 373 # nm
+
+# will want to skip airmass if already run (very slow)
+run: ['match', 'visible', 'shear']
+
+
