@@ -1,0 +1,17 @@
+cluster_file: '/Users/sweveret/repos/palomar-proposal-2022S/data/redmapper_dr8_public_v6.3_catalog_airmass.fits'
+source_file: '/Users/sweveret/repos/palomar-proposal-2022S/data/portsmouth_emlinekin-DR12.fits'
+matched_file: '/Users/sweveret/repos/palomar-proposal-2022S/data/10arcmin-match.fits'
+
+airmass:
+  start_date: '2022-08-01'
+  end_date: '2023-01-31'
+  utc_offset: -7
+  min_airmass: 1.3
+
+match:
+  radius: 5./60. # deg
+
+shear:
+  min_g: 0.0
+  max_g: 0.2
+
