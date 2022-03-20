@@ -87,7 +87,7 @@ def compute_airmass(targets, observer, time, Ngrid=25):
 
 def add_good_nights_col(catalog_file, start, end, utc_offset,
                         ra_tag='RA', dec_tag='DEC', overwrite=False,
-                        min_airmass=1.5, outfile=None, plot=True):
+                        min_airmass=1.5, outfile=None, plot=False):
     '''
     This function computes the number of nights
 

@@ -1,6 +1,16 @@
 cluster_file: '/Users/sweveret/repos/palomar-proposal-2022S/data/redmapper_dr8_public_v6.3_catalog_airmass.fits'
 source_file: '/Users/sweveret/repos/palomar-proposal-2022S/data/portsmouth_emlinekin-DR12.fits'
-matched_file: '/Users/sweveret/repos/palomar-proposal-2022S/data/10arcmin-match.fits'
+# matched_file: '/Users/sweveret/repos/palomar-proposal-2022S/data/10arcmin-match.fits'
+
+cluster_outfile = '/Users/sweveret/repos/palomar-proposal-2022S/data/added_cols_redmapper_dr8_public_v6.3_catalog.fits'
+source_outfile = '/Users/sweveret/repos/palomar-proposal-2022S/data/added_cols_portsmouth_emlinekin-DR12.fits'
+match_outfile = '/Users/sweveret/repos/palomar-proposal-2022S/data/palomar_matched_catalog.fits'
+
+plot: True
+overwrite: False
+
+# will want to skip airmass if already run (very slow)
+run: ['cluster_preprocess', 'source_preprocess', 'match', 'shear']
 
 airmass:
   start_date: '2022-08-01'
@@ -22,7 +32,5 @@ visible:
     'halpha': 656.3 # nm
     'O2': 373 # nm
 
-# will want to skip airmass if already run (very slow)
-run: ['match', 'visible', 'shear']
 
 
