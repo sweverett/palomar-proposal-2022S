@@ -1,29 +1,34 @@
+# original files
 cluster_file: '/Users/sweveret/repos/palomar-proposal-2022S/data/redmapper_dr8_public_v6.3_catalog_airmass.fits'
-source_file: '/Users/sweveret/repos/palomar-proposal-2022S/data/portsmouth_emlinekin-DR12.fits'
-# matched_file: '/Users/sweveret/repos/palomar-proposal-2022S/data/10arcmin-match.fits'
+source_file:  '/Users/sweveret/repos/palomar-proposal-2022S/data/portsmouth_emlinekin-DR12.fits'
 
-cluster_outfile = '/Users/sweveret/repos/palomar-proposal-2022S/data/added_cols_redmapper_dr8_public_v6.3_catalog.fits'
-source_outfile = '/Users/sweveret/repos/palomar-proposal-2022S/data/added_cols_portsmouth_emlinekin-DR12.fits'
+# pre-processed files w/ value-added cols
+cluster_outfile = '/Users/sweveret/repos/palomar-proposal-2022S/data/processed_redmapper_dr8_public_v6.3_catalog.fits'
+source_outfile  = '/Users/sweveret/repos/palomar-proposal-2022S/data/processed_portsmouth_emlinekin-DR12.fits'
+
+# cats after initial cuts are applied
+cluster_cut_outfile = '/Users/sweveret/repos/palomar-proposal-2022S/data/cut_redmapper_dr8_public_v6.3_catalog.fits'
+source_cut_outfile  = '/Users/sweveret/repos/palomar-proposal-2022S/data/cut_portsmouth_emlinekin-DR12.fits'
+
 match_outfile = '/Users/sweveret/repos/palomar-proposal-2022S/data/palomar_matched_catalog.fits'
 
 plot: True
 overwrite: False
 
 # will want to skip airmass if already run (very slow)
-run: ['cluster_preprocess', 'source_preprocess', 'match', 'shear']
+# run: ['cluster_preprocess', 'source_preprocess', 'match', 'shear']
+run: ['source_preprocess',
+      'cluster_cuts',
+      'source_cuts',
+      'match',
+      'shear',
+      'rank']
 
 airmass:
   start_date: '2022-08-01'
   end_date: '2023-01-31'
   utc_offset: -7
   min_airmass: 1.3
-
-match:
-  radius: 5./60. # deg
-
-shear:
-  min_g: 0.0
-  max_g: 0.2
 
 visible:
   blue_lim: 330 # nm
@@ -32,5 +37,35 @@ visible:
     'halpha': 656.3 # nm
     'O2': 373 # nm
 
+line_sb:
+  fiber_area: ?
 
+cluster_cuts:
+  'good_nights':
+    min: 1
+    max: None
 
+source_cuts:
+  visible_lines:
+    min: 1
+    max: None
+  line_sb:
+    min: ?
+    max: None
+    factor: 0.1 # e.g. factor * line_sb > min
+  FRACDEV:
+    min: ?
+    max: None
+  AB_EXP:
+    min: ?
+    max: None
+  THETA_EXP:
+    min: ?
+    max: None
+
+match:
+  match_radius: 5./60. # deg
+
+shear:
+  min_g: 0.0
+  max_g: 0.2

@@ -1,22 +1,30 @@
 from argparse import ArgumentParser
 from airmass import add_good_nights_col
-from emission_lines import compute_visible_lines
+from emission_lines import compute_visible_lines, compute_line_sb
+from match import match_clusters2sources
+import cuts
 import pudb
 
 parser = ArgumentParser()
 
 parser.add_argument('config_file', type=str,
                     help='Filepath for run config')
-parser.add_argument('-outfile', type=str, default=None,
-                    help='Filepath for output file w/ added cols')
 
 def main(args):
 
     config = args.config_file
-    outfile = args.outfile
 
     cluster_file = config['cluster_file']
     source_file = config['source_file']
+
+    # pre-processed filenames
+    cluster_outfile = config['cluster_outfile']
+    source_outfile = config['source_outfile']
+
+    # after cuts filenames
+    cluster_cut_otufile = config['cluster_cut_outfile']
+    source_cut_otufile = config['source_cut_outfile']
+    match_outfile = confg['match_outfile']
 
     try:
         plot = config['plot']
@@ -60,13 +68,42 @@ def main(args):
             )
 
         print(f'Adding `line_sb` to source file {source_file}')
+        fiber_area = config['sb']['fiber_area']
         compute_line_sb(
-            source_file, lines, blue_lim, red_lim, plot=plot
+            source_file, fiber_area, outfile=source_outfile,
+            overwrite=overwrite, plot=plot
+            )
+
+    #-----------------------------------------------------------------
+    if 'cluster_cuts' in config['run']:
+        cluster_cuts = config['cluster_cuts']
+        print(f'Applying initial cluster cuts on {cluster_outfile}...')
+        cuts.apply_pre_cluster_cuts(
+            cluster_outfile, cluster_cuts, outfile=cluster_cut_outfile
+            )
+
+    #-----------------------------------------------------------------
+    if 'source_cuts' in config['run']:
+        print(f'Applying initial source cuts on {source_outfile}...')
+        source_cuts = config['source_cuts']
+        cuts.apply_pre_source_cuts(
+            source_outfile, source_cuts, outfile=source_cut_outfile
             )
 
     #-----------------------------------------------------------------
     if 'match' in config['run']:
-        print(f'Matching clusters to sources in {source_file}...')
+        print(f'Matching clusters from {cluster_file} to ' +\
+              f'sources in {source_file}...')
+        match_radius = config['match']['match_radius']
+        matched = match_clusters2sources(
+            source_outfile, cluster_outfile, outfile=match_outfile,
+            match_radius=match_radius, overwrite=overwrite, plot=plot
+            )
+
+    #-----------------------------------------------------------------
+    if 'match' in config['run']:
+        print(f'Matching clusters from {cluster_file} to ' +\
+              f'sources in {source_file}...')
 
     return 0
 
