@@ -25,7 +25,7 @@ class MatchedCatalog(object):
                  cat1_ratag='ra', cat1_dectag='dec',
                  cat2_ratag='ra', cat2_dectag='dec',
                  cat1_hdu=1, cat2_hdu=1,
-                 match_radius=30/3600., depth=14, table_names=None):
+                 match_radius=5/60., depth=14, table_names=None):
         '''
         match_radius is in deg, same as htm
         '''
@@ -96,8 +96,11 @@ class MatchedCatalog(object):
 
         return
 
-def match_clusters2sources(source_file, cluster_file, outfile,
-                           overwrite=False, plot=False):
+def match_clusters2sources(source_file, cluster_file, outfile=None,
+                           match_radius=5./60, overwrite=False, plot=False):
+    '''
+    match_radius is in deg
+    '''
 
     start = time()
     matched = MatchedCatalog(cluster_file, source_file,
@@ -112,7 +115,8 @@ def match_clusters2sources(source_file, cluster_file, outfile,
 
     print(f'matching took {T:.1f}s for {matched.Ncat1} reference sources')
 
-    matched.write(outfile, overwrite=overwrite)
+    if outfile is not None:
+        matched.write(outfile, overwrite=overwrite)
 
     return matched
 
