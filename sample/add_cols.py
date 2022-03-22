@@ -10,6 +10,59 @@ parser = ArgumentParser()
 parser.add_argument('config_file', type=str,
                     help='Filepath for run config')
 
+def run_cluster_preprocessing(cluster_outfile, config):
+
+    overwrite = config['overwrite']
+    plot = config['plot']
+
+    print(f'Adding `good_nights` to cluster file {cluster_file}...')
+
+    start_date = config['airmass']['start_date']
+    end_date = config['airmass']['end_date']
+    utc_offset = config['airmass']['utc_offset']
+    min_airmass = config['airmass']['min_airmass']
+    add_good_nights_col(
+        cluster_file, start_date, end_date, utc_offset,
+        min_airmass=min_airmass, overwrite=overwrite,
+        outfile=outfile, plot=plot
+        )
+
+    return
+
+def run_source_preprocessing(config):
+    '''
+    Source preprocess funcs return cat instead of writing to a file
+    as there are multiple steps
+    '''
+
+    source_file = config['source_file']
+    source_outfile = config['source_outfile']
+    overwrite = config['overwrite']
+    plot = config['plot']
+
+    sources = Table.read(source_file)
+
+    print(f'Adding `visible_lines` to source file {source_file}')
+
+    blue_lim = config['visible']['blue_lim']
+    red_lim = config['visible']['red_lim']
+    lines = config['visible']['lines']
+    sources = compute_visible_lines(
+        sources, lines, blue_lim, red_lim,
+        outfile=source_outfile, overwrite=overwrite, plot=plot
+        )
+
+    print(f'Adding `line_sb` to source file {source_file}')
+
+    fiber_diam = config['sb']['fiber_diam']
+    sources = compute_line_sb(
+        sources, lines, fiber_diam, plot=plot
+        )
+
+    sources.write(source_outfile, overwrite=overwrite)
+
+    return
+
 def main(args):
 
     config = args.config_file
@@ -39,40 +92,12 @@ def main(args):
     #-----------------------------------------------------------------
     if 'cluster_preprocess' in config['run']:
         print('Running cluster catalog preprocessing...')
-
-        print(f'Adding `good_nights` to cluster file {cluster_file}...')
-
-        cluster_outfile = config['cluster_outfile']
-
-        start_date = config['airmass']['start_date']
-        end_date = config['airmass']['end_date']
-        utc_offset = config['airmass']['utc_offset']
-        min_airmass = config['airmass']['min_airmass']
-        add_good_nights_col(
-            cluster_file, start_date, end_date, utc_offset,
-            min_airmass=min_airmass, overwrite=overwrite,
-            outfile=outfile, plot=plot
-            )
+        run_cluster_preprocessing(cluster_outfile, config)
 
     #-----------------------------------------------------------------
     if 'source_preprocess' in config['run']:
         print('Running source catalog preprocessing...')
-
-        print(f'Adding `visible_lines` to source file {source_file}')
-        blue_lim = config['visible']['blue_lim']
-        red_lim = config['visible']['red_lim']
-        lines = config['visible']['lines']
-        compute_visible_lines(
-            source_file, lines, blue_lim, red_lim,
-            outfile=source_outfile, overwrite=overwrite, plot=plot
-            )
-
-        print(f'Adding `line_sb` to source file {source_file}')
-        fiber_area = config['sb']['fiber_area']
-        compute_line_sb(
-            source_file, fiber_area, outfile=source_outfile,
-            overwrite=overwrite, plot=plot
-            )
+        run_source_preprocessing(source_outfile, config)
 
     #-----------------------------------------------------------------
     if 'cluster_cuts' in config['run']:

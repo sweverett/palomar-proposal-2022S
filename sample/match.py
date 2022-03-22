@@ -120,6 +120,25 @@ def match_clusters2sources(source_file, cluster_file, outfile=None,
 
     return matched
 
+def match_source_catalogs(source_photom, source_emission):
+    pass)
+    matched = MatchedCatalog(source_emission, source_source,
+                             cat1_ratag='RA', cat1_dectag='DEC',
+                             cat2_ratag='RA', cat2_dectag='DEC',
+                             table_names=['photom', 'emission']
+                             )
+
+    T = time() - start
+
+    print(f'matching took {T:.1f}s for {matched.Ncat1} reference sources')
+
+    if outfile is not None:
+        matched.write(outfile, overwrite=overwrite)
+
+    return matched
+
+    return
+
 def plot_separations(matched, size=(9,5)):
 
     sep = matched.cat['separation'] * 60. # arcmin

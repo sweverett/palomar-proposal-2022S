@@ -35,10 +35,10 @@ visible:
   red_lim: 770 # nm
   lines:
     'halpha': 656.3 # nm
-    'O2': 373 # nm
+    'O2': (372.6, 372.9) # nm
 
 line_sb:
-  fiber_area: ?
+  fiber_diam: 2 # arcsec
 
 cluster_cuts:
   'good_nights':
