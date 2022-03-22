@@ -1,16 +1,19 @@
 # original files
-cluster_file: '/Users/sweveret/repos/palomar-proposal-2022S/data/redmapper_dr8_public_v6.3_catalog_airmass.fits'
-source_file:  '/Users/sweveret/repos/palomar-proposal-2022S/data/portsmouth_emlinekin-DR12.fits'
+cluster_file: '/Users/sweveret/repos/palomar-proposal-2022S/data/redmapper_dr8_public_v6.3_catalog_airmass_1.5.fits'
+source_file:  '/Users/sweveret/repos/palomar-proposal-2022S/data/portsmouth_emlinekin-full-DR12.fits'
+sdss_file: '/Users/sweveret/repos/palomar-proposal-2022S/data/sdss/photoPosPlate-dr17.fits'
 
 # pre-processed files w/ value-added cols
-cluster_outfile = '/Users/sweveret/repos/palomar-proposal-2022S/data/processed_redmapper_dr8_public_v6.3_catalog.fits'
+# cluster_outfile = '/Users/sweveret/repos/palomar-proposal-2022S/data/processed_redmapper_dr8_public_v6.3_catalog.fits'
+cluster_outfile: '/Users/sweveret/repos/palomar-proposal-2022S/data/redmapper_dr8_public_v6.3_catalog_airmass_1.5.fits'
 source_outfile  = '/Users/sweveret/repos/palomar-proposal-2022S/data/processed_portsmouth_emlinekin-DR12.fits'
 
 # cats after initial cuts are applied
 cluster_cut_outfile = '/Users/sweveret/repos/palomar-proposal-2022S/data/cut_redmapper_dr8_public_v6.3_catalog.fits'
 source_cut_outfile  = '/Users/sweveret/repos/palomar-proposal-2022S/data/cut_portsmouth_emlinekin-DR12.fits'
 
-match_outfile = '/Users/sweveret/repos/palomar-proposal-2022S/data/palomar_matched_catalog.fits'
+match_outfile = '/Users/sweveret/repos/palomar-proposal-2022S/data/out/palomar_matched_catalog.fits'
+targets_outfile = '/Users/sweveret/repos/palomar-proposal-2022S/data/out/palomar_target_list.fits'
 
 plot: True
 overwrite: False
@@ -22,7 +25,11 @@ run: ['source_preprocess',
       'source_cuts',
       'match',
       'shear',
+      'cuts',
       'rank']
+
+sdss:
+  match_radius: 3. / 3600 # deg
 
 airmass:
   start_date: '2022-08-01'
@@ -43,29 +50,27 @@ line_sb:
 cluster_cuts:
   'good_nights':
     min: 1
-    max: None
 
 source_cuts:
   visible_lines:
     min: 1
-    max: None
-  line_sb:
-    min: ?
-    max: None
-    factor: 0.1 # e.g. factor * line_sb > min
+  min_line_sb:
+    min: 26.5 # need to incorporate 10% factor later
   FRACDEV:
-    min: ?
-    max: None
+    max: 0.05 
   AB_EXP:
-    min: ?
-    max: None
+    min: 1 # update; dummy value
   THETA_EXP:
-    min: ?
-    max: None
+    min: 5 # update; dummy value
+  SPEC_PRIMARY:
+    equals: 1
+  FIT_WARNING:
+    equals: 0
 
 match:
   match_radius: 5./60. # deg
 
-shear:
-  min_g: 0.0
-  max_g: 0.2
+cuts:
+  gtan:
+    min: 0.0
+    max: 0.2

@@ -104,11 +104,10 @@ def match_clusters2sources(source_file, cluster_file, outfile=None,
 
     start = time()
     matched = MatchedCatalog(cluster_file, source_file,
-    # matched = MatchedCatalog(source_file, cluster_file,
                              cat1_ratag='RA', cat1_dectag='DEC',
                              cat2_ratag='RA', cat2_dectag='DEC',
-                             # table_names=['source', 'cluster']
-                             table_names=['cluster', 'source']
+                             table_names=['cluster', 'source'],
+                             match_radius=match_radius
                              )
 
     T = time() - start
@@ -118,26 +117,39 @@ def match_clusters2sources(source_file, cluster_file, outfile=None,
     if outfile is not None:
         matched.write(outfile, overwrite=overwrite)
 
+    if plot is True:
+        plot_separations(matched)
+
     return matched
 
-def match_source_catalogs(source_photom, source_emission):
-    pass)
-    matched = MatchedCatalog(source_emission, source_source,
+def match_source_catalogs(source_photom, source_emission, outfile=None,
+                          match_radius=5./60, overwrite=False, plot=False):
+    '''
+    match_radius is in deg
+    '''
+
+    start = time()
+    matched = MatchedCatalog(source_photom, source_emission,
                              cat1_ratag='RA', cat1_dectag='DEC',
                              cat2_ratag='RA', cat2_dectag='DEC',
-                             table_names=['photom', 'emission']
+                             table_names=['photom', 'emission'],
+                             match_radius=match_radius
                              )
 
     T = time() - start
 
     print(f'matching took {T:.1f}s for {matched.Ncat1} reference sources')
+    print(f'photometry catalog: {matched.Ncat1}')
+    print(f'emission catalog: {matched.Ncat2}')
+    print(f'matches: {matched.Nobjs}')
 
     if outfile is not None:
         matched.write(outfile, overwrite=overwrite)
 
-    return matched
+    if plot is True:
+        plot_separations(matched)
 
-    return
+    return matched
 
 def plot_separations(matched, size=(9,5)):
 
