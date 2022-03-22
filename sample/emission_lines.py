@@ -2,7 +2,7 @@ import numpy as np
 from astropy.table import Table
 import astropy.units as u
 
-def compute_line_sb(sources, lines, fiber_diam, flux_col='FLUX' plot=False):
+def compute_line_sb(sources, lines, fiber_diam, flux_col='FLUX', plot=False):
     '''
     This function computes the surface brightness of each desired emission line
     using the fiber diam used for measurements in the source catalog
@@ -67,11 +67,13 @@ def compute_visible_lines(sources, lines, blue_lim, red_lim, plot=False):
         # to handle doublets, etc.
         try:
             wavelength = np.mean(wavelength)
+        except:
+            pass
 
         # visible = np.zeros(N, dtype=bool)
         shifted = wavelength * (1. + zsource)
 
-        visible = (shifted > blue_lim) and (shifted < red_limit):
+        visible = (shifted > blue_lim) and (shifted < red_limit)
 
         sources[f'{line}_visible'] = visible
 

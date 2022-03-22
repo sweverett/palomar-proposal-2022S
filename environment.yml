@@ -96,7 +96,7 @@ dependencies:
   - wcwidth=0.2.5=pyhd3eb1b0_0
   - wheel=0.37.1=pyhd8ed1ab_0
   - xz=5.2.5=haf1e3a3_1
-  - yaml=0.2.5=h0d85af4_2
+  - yaml=0.2.5=haf1e3a3_0
   - zeromq=4.3.4=h23ab428_0
   - zipp=3.7.0=pyhd8ed1ab_1
   - zlib=1.2.11=h9173be1_1013
@@ -109,6 +109,7 @@ dependencies:
     - astropy==5.0.2
     - brotlipy==0.7.0
     - cffi==1.15.0
+    - cluster-toolkit==0.0.0
     - cryptography==36.0.0
     - debugpy==1.5.1
     - entrypoints==0.3
@@ -140,4 +141,3 @@ dependencies:
     - urwid==2.1.2
     - webencodings==0.5.1
     - websocket-client==0.58.0
-prefix: /Users/sweveret/miniconda3/envs/palomar

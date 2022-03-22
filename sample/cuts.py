@@ -22,22 +22,34 @@ def apply_cuts(catalog, cuts, lines=None):
                 indx = emission_line_index[line]
                 try:
                     bad[catalog[col][indx] < value['min']] = True
+                except:
+                    pass
 
                 try:
                     bad[catalog[col][indx] > val['max']] = True
+                except:
+                    pass
 
                 try:
                     bad[catlog[col][indx] != val['equal']] = True
+                except:
+                    pass
 
         else:
             try:
                 bad[catalog[col] < value['min']] = True
+            except:
+                pass
 
             try:
                 bad[catalog[col] > val['max']] = True
+            except:
+                pass
 
             try:
                 bad[catlog[col] != val['equal']] = True
+            except:
+                pass
 
     cut_catalog = catalog[~bad]
 
@@ -67,8 +79,8 @@ def apply_cluster_pre_cuts(cluster_file, cluster_cuts, outfile, overwrite=False,
     else:
         return
 
-def apply_source_pre_cuts(source_file, source_cuts, lines, outfile, overwrite=False
-                      return_cat=False):
+def apply_source_pre_cuts(source_file, source_cuts, lines, outfile, overwrite=False,
+                          return_cat=False):
     '''
     source_file: str
         Filename of source catalog to apply cuts to.

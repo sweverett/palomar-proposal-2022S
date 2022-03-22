@@ -1,4 +1,9 @@
 import os
+import yaml
+
+def read_yaml(yaml_file):
+    with open(yaml_file, 'r') as stream:
+        return yaml.safe_load(stream)
 
 def make_dir(d):
     '''
