@@ -109,7 +109,6 @@ dependencies:
     - astropy==5.0.2
     - brotlipy==0.7.0
     - cffi==1.15.0
-    - cluster-toolkit==0.0.0
     - cryptography==36.0.0
     - debugpy==1.5.1
     - entrypoints==0.3
