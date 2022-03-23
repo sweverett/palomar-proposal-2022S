@@ -1,6 +1,7 @@
 import numpy as np
 from astropy.table import Table
 import astropy.units as u
+import matplotlib.pyplot as plt
 
 def compute_line_sb(sources, lines, fiber_diam, flux_col='FLUX', plot=False):
     '''
@@ -24,12 +25,15 @@ def compute_line_sb(sources, lines, fiber_diam, flux_col='FLUX', plot=False):
     for line, wavelength in lines.items():
         indices = emission_line_index[line]
 
+        if isinstance(indices, int):
+            indices = [indices]
+
         sb = 0
         for indx in indices:
             sb += sources[flux_col][:,indx] / fiber_area # flux_unit / arcsec^2
 
-        sources[f'{line_sb_flux}'] = sb
-        sources[f'{line_sb_mag}'] = -2.5*np.log10(sb / sb_zp)
+        sources[f'{line}_sb_flux'] = sb
+        sources[f'{line}_sb_mag'] = -2.5*np.log10(sb / sb_zp)
 
         if min_sb is None:
             min_sb = sb
@@ -37,7 +41,8 @@ def compute_line_sb(sources, lines, fiber_diam, flux_col='FLUX', plot=False):
             min_sb = np.min([min_sb, sb], axis=0)
 
     # keep track of minimum line sb
-    sources['min_line_sb'] = min_sb
+    sources['min_line_sb_flux'] = min_sb
+    sources['min_line_sb_mag'] = -2.5*np.log(min_sb / sb_zp)
 
     return sources
 
@@ -54,8 +59,6 @@ def compute_visible_lines(sources, lines, blue_lim, red_lim, plot=False):
         The filter limits in nm
     '''
 
-    sources = Table.read(source_file)
-
     N = len(sources)
 
     sources['visible_lines'] = np.zeros(N, dtype=np.int)
@@ -66,14 +69,18 @@ def compute_visible_lines(sources, lines, blue_lim, red_lim, plot=False):
 
         # to handle doublets, etc.
         try:
+            # print('wavelength before: ', wavelength)
+            # print('type(wavelength):', type(wavelength))
+            # print('type(wavelength):', type(wavelength))
+            wavelength = eval(wavelength)
             wavelength = np.mean(wavelength)
+            # print('wavelength after: ', wavelength)
         except:
             pass
 
-        # visible = np.zeros(N, dtype=bool)
         shifted = wavelength * (1. + zsource)
 
-        visible = (shifted > blue_lim) and (shifted < red_limit)
+        visible = (shifted > blue_lim) & (shifted < red_lim)
 
         sources[f'{line}_visible'] = visible
 

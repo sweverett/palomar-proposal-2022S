@@ -1,4 +1,5 @@
 import numpy as np
+import os
 from astropy.table import Table
 from emission_lines import emission_line_index
 import utils
@@ -21,12 +22,12 @@ def apply_cuts(catalog, cuts, lines=None):
             for line in lines:
                 indx = emission_line_index[line]
                 try:
-                    bad[catalog[col][indx] < value['min']] = True
+                    bad[catalog[col][indx] <= value['min']] = True
                 except:
                     pass
 
                 try:
-                    bad[catalog[col][indx] > val['max']] = True
+                    bad[catalog[col][indx] >= val['max']] = True
                 except:
                     pass
 
@@ -35,14 +36,30 @@ def apply_cuts(catalog, cuts, lines=None):
                 except:
                     pass
 
-        else:
+        if col in ['FRACDEV', 'AB_EXP', 'THETA_EXP']:
+            indx = 2 # r-band; ugriz
             try:
-                bad[catalog[col] < value['min']] = True
+                bad[catalog[col][indx] <= value['min']] = True
             except:
                 pass
 
             try:
-                bad[catalog[col] > val['max']] = True
+                bad[catalog[col][indx] >= val['max']] = True
+            except:
+                pass
+
+            try:
+                bad[catlog[col][indx] != val['equal']] = True
+            except:
+                pass
+        else:
+            try:
+                bad[catalog[col] <= value['min']] = True
+            except:
+                pass
+
+            try:
+                bad[catalog[col] >= val['max']] = True
             except:
                 pass
 
@@ -71,7 +88,7 @@ def apply_cluster_pre_cuts(cluster_file, cluster_cuts, outfile, overwrite=False,
 
     cut_cat = apply_cuts(cat, cluster_cuts)
 
-    utils.make_dir(os.dirname(outfile))
+    utils.make_dir(os.path.dirname(outfile))
     cut_cat.write(outfile, overwrite=overwrite)
 
     if return_cat is True:
@@ -95,7 +112,7 @@ def apply_source_pre_cuts(source_file, source_cuts, lines, outfile, overwrite=Fa
 
     cut_cat = apply_cuts(cat, source_cuts, lines=lines)
 
-    utils.make_dir(os.dirname(outfile))
+    utils.make_dir(os.path.dirname(outfile))
     cut_cat.write(outfile, overwrite=overwrite)
 
     if return_cat is True:

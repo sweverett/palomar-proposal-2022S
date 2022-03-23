@@ -1,9 +1,12 @@
 from argparse import ArgumentParser
 from airmass import add_good_nights_col
 from emission_lines import compute_visible_lines, compute_line_sb
-from match import match_clusters2sources
+from match import match_clusters2sources, match_source_catalogs
+from cuts import apply_cluster_pre_cuts, apply_source_pre_cuts, apply_post_cuts
 from compute_shear import compute_shear
+from ellipticity import compute_ellipticity
 import cuts
+import utils
 import pudb
 
 parser = ArgumentParser()
@@ -11,8 +14,9 @@ parser = ArgumentParser()
 parser.add_argument('config_file', type=str,
                     help='Filepath for run config')
 
-def run_cluster_preprocessing(cluster_outfile, config):
+def run_cluster_preprocessing(config):
 
+    cluster_outfile = config['cluster_outfile']
     overwrite = config['overwrite']
     plot = config['plot']
 
@@ -46,11 +50,16 @@ def run_source_preprocessing(config):
     print(f'Matching emission sources to SDSS photometry in {sdss_file}')
 
     match_outfile = source_file.replace('.fits', 'matched_sdss.fits')
-    match_radius = config['sdss']['match_radius']
-    sources = match_source_catalogs(
-        sdss_file, source_file, match_radius=match_radius, outfile=outfile,
-        overwrite=overwrite, plot=plot
-        )
+    match_radius = eval(config['sdss']['match_radius'])
+    # matched = match_source_catalogs(
+    #     sdss_file, source_file, match_radius=match_radius, outfile=match_outfile,
+    #     overwrite=overwrite, plot=plot
+    #     )
+    # sources = matched.cat
+
+    # TODO: remove after testing!
+    from astropy.table import Table
+    sources = Table.read(match_outfile)
 
     print(f'Adding `visible_lines` to source file {source_outfile}')
 
@@ -58,24 +67,28 @@ def run_source_preprocessing(config):
     red_lim = config['visible']['red_lim']
     lines = config['visible']['lines']
     sources = compute_visible_lines(
-        sources, lines, blue_lim, red_lim,
-        outfile=source_outfile, overwrite=overwrite, plot=plot
+        sources, lines, blue_lim, red_lim, plot=plot
         )
 
     print(f'Adding `line_sb` to source file {source_outfile}')
 
-    fiber_diam = config['sb']['fiber_diam']
+    fiber_diam = config['line_sb']['fiber_diam']
     sources = compute_line_sb(
         sources, lines, fiber_diam, plot=plot
         )
 
     sources.write(source_outfile, overwrite=overwrite)
 
+    print(f'Adding `e` (ellipticity) to source file {source_outfile}')
+    soures = compute_ellipticity(
+        sources
+        )
+
     return
 
 def main(args):
 
-    config = args.config_file
+    config = utils.read_yaml(args.config_file)
 
     cluster_file = config['cluster_file']
     source_file = config['source_file']
@@ -87,7 +100,7 @@ def main(args):
     # after cuts filenames
     cluster_cut_outfile = config['cluster_cut_outfile']
     source_cut_outfile = config['source_cut_outfile']
-    match_outfile = confg['match_outfile']
+    match_outfile = config['match_outfile']
 
     try:
         plot = config['plot']
@@ -102,19 +115,20 @@ def main(args):
     #-----------------------------------------------------------------
     if 'cluster_preprocess' in config['run']:
         print('Running cluster catalog preprocessing...')
-        run_cluster_preprocessing(cluster_outfile, config)
+        run_cluster_preprocessing(config)
 
     #-----------------------------------------------------------------
     if 'source_preprocess' in config['run']:
         print('Running source catalog preprocessing...')
-        run_source_preprocessing(source_outfile, config)
+        run_source_preprocessing(config)
 
     #-----------------------------------------------------------------
     if 'cluster_cuts' in config['run']:
         cluster_cuts = config['cluster_cuts']
         print(f'Applying initial cluster cuts on {cluster_outfile}...')
-        cuts.apply_cluster_pre_cuts(
-            cluster_outfile, cluster_cuts, outfile=cluster_cut_outfile
+        apply_cluster_pre_cuts(
+            cluster_outfile, cluster_cuts, outfile=cluster_cut_outfile,
+            overwrite=overwrite
             )
 
     #-----------------------------------------------------------------
@@ -122,15 +136,16 @@ def main(args):
         print(f'Applying initial source cuts on {source_outfile}...')
         source_cuts = config['source_cuts']
         lines = config['visible']['lines']
-        cuts.apply_source_pre_cuts(
-            source_outfile, source_cuts, lines, outfile=source_cut_outfile
+        apply_source_pre_cuts(
+            source_outfile, source_cuts, lines, outfile=source_cut_outfile,
+            overwrite=overwrite
             )
 
     #-----------------------------------------------------------------
     if 'match' in config['run']:
         print(f'Matching clusters from {cluster_file} to ' +\
               f'sources in {source_file}...')
-        match_radius = config['match']['match_radius']
+        match_radius = eval(config['match']['match_radius'])
         matched = match_clusters2sources(
             source_outfile, cluster_outfile, outfile=match_outfile,
             match_radius=match_radius, overwrite=overwrite, plot=plot
@@ -143,10 +158,10 @@ def main(args):
         print(f'Matching clusters from {cluster_file} to ' +\
               f'sources in {source_file}...')
         matched = compute_shear(matched)
-        cuts = config['cuts']
+        cat_cuts = config['cuts']
 
-        cuts.apply_post_cuts(
-            matched, cuts, outfile=targets_outfile
+        apply_post_cuts(
+            matched, cat_cuts, outfile=targets_outfile
             )
 
     return 0

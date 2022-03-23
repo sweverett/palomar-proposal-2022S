@@ -1,32 +1,34 @@
 # original files
 cluster_file: '/Users/sweveret/repos/palomar-proposal-2022S/data/redmapper_dr8_public_v6.3_catalog_airmass_1.5.fits'
-source_file:  '/Users/sweveret/repos/palomar-proposal-2022S/data/portsmouth_emlinekin-full-DR12.fits'
+source_file:  '/Users/sweveret/repos/palomar-proposal-2022S/data/portsmouth_emlinekin_full-DR12.fits'
 sdss_file: '/Users/sweveret/repos/palomar-proposal-2022S/data/sdss/photoPosPlate-dr17.fits'
 
 # pre-processed files w/ value-added cols
 # cluster_outfile = '/Users/sweveret/repos/palomar-proposal-2022S/data/processed_redmapper_dr8_public_v6.3_catalog.fits'
 cluster_outfile: '/Users/sweveret/repos/palomar-proposal-2022S/data/redmapper_dr8_public_v6.3_catalog_airmass_1.5.fits'
-source_outfile  = '/Users/sweveret/repos/palomar-proposal-2022S/data/processed_portsmouth_emlinekin-DR12.fits'
+source_outfile:  '/Users/sweveret/repos/palomar-proposal-2022S/data/processed_portsmouth_emlinekin-DR12.fits'
 
 # cats after initial cuts are applied
-cluster_cut_outfile = '/Users/sweveret/repos/palomar-proposal-2022S/data/cut_redmapper_dr8_public_v6.3_catalog.fits'
-source_cut_outfile  = '/Users/sweveret/repos/palomar-proposal-2022S/data/cut_portsmouth_emlinekin-DR12.fits'
+cluster_cut_outfile: '/Users/sweveret/repos/palomar-proposal-2022S/data/cut_redmapper_dr8_public_v6.3_catalog.fits'
+source_cut_outfile : '/Users/sweveret/repos/palomar-proposal-2022S/data/cut_portsmouth_emlinekin-DR12.fits'
 
-match_outfile = '/Users/sweveret/repos/palomar-proposal-2022S/data/out/palomar_matched_catalog.fits'
-targets_outfile = '/Users/sweveret/repos/palomar-proposal-2022S/data/out/palomar_target_list.fits'
+match_outfile: '/Users/sweveret/repos/palomar-proposal-2022S/data/out/palomar_matched_catalog.fits'
+targets_outfile: '/Users/sweveret/repos/palomar-proposal-2022S/data/out/palomar_target_list.fits'
 
 plot: True
-overwrite: False
+overwrite: True
 
 # will want to skip airmass if already run (very slow)
 # run: ['cluster_preprocess', 'source_preprocess', 'match', 'shear']
-run: ['source_preprocess',
+run: [
+      # 'source_preprocess',
       'cluster_cuts',
       'source_cuts',
       'match',
       'shear',
       'cuts',
-      'rank']
+      'rank'
+      ]
 
 sdss:
   match_radius: 3. / 3600 # deg
@@ -42,7 +44,7 @@ visible:
   red_lim: 770 # nm
   lines:
     'halpha': 656.3 # nm
-    'O2': (372.6, 372.9) # nm
+    'OII': (372.6, 372.9) # nm
 
 line_sb:
   fiber_diam: 2 # arcsec
@@ -55,13 +57,18 @@ source_cuts:
   visible_lines:
     min: 1
   min_line_sb:
+    max: 0.
     min: 26.5 # need to incorporate 10% factor later
   FRACDEV:
-    max: 0.05 
-  AB_EXP:
-    min: 1 # update; dummy value
+    min: 0.0
+    max: 0.1
+  e:
+    min: 0.0
+    max: 0.8
+  # AB_EXP:
+  #   min: 1 # update; dummy value
   THETA_EXP:
-    min: 5 # update; dummy value
+    min: 1 # major axis scale radius (arcsec)
   SPEC_PRIMARY:
     equals: 1
   FIT_WARNING:
