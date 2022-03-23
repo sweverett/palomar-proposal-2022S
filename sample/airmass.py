@@ -11,6 +11,7 @@ from astropy import units as u
 from astroplan.plots import plot_airmass
 from time import time as stime
 from argparse import ArgumentParser
+import utils
 
 # to make plot_airmass quieter...
 import warnings
@@ -180,7 +181,10 @@ def add_good_nights_col(catalog_file, start, end, utc_offset,
         plt.ylabel('Counts')
         plt.yscale('log')
         plt.gcf().set_size_inches(7,4)
-        plt.show()
+
+        plotfile = os.path.join(utils.get_plot_dir(), f'airmass_{min_airmass}.png')
+        plt.savefig(plotfile, bbox_inches='tight', dpi=300)
+        plt.close()
 
     return
 
