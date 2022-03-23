@@ -13,7 +13,7 @@ def compute_line_sb(sources, lines, fiber_diam, flux_col='FLUX', plot=False):
 
     N = len(sources)
 
-    flux_unit = (1e-17) * u.erg / (u.cm**2 * u.s * u.A)
+    flux_unit = (1e-17) * u.erg / (u.cm**2 * u.s * u.AA)
 
     # see https://www.sdss.org/dr12/algorithms/fluxcal/
     sb_zp = 3631 * u.Jy
