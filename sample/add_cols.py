@@ -20,6 +20,9 @@ def run_cluster_preprocessing(config):
     overwrite = config['overwrite']
     plot = config['plot']
 
+    # make sure plot dir is present
+    utils.make_dir(utils.get_plot_dir())
+
     print(f'Adding `good_nights` to cluster file {cluster_file}...')
 
     start_date = config['airmass']['start_date']
@@ -51,15 +54,15 @@ def run_source_preprocessing(config):
 
     match_outfile = source_file.replace('.fits', 'matched_sdss.fits')
     match_radius = eval(config['sdss']['match_radius'])
-    # matched = match_source_catalogs(
-    #     sdss_file, source_file, match_radius=match_radius, outfile=match_outfile,
-    #     overwrite=overwrite, plot=plot
-    #     )
-    # sources = matched.cat
+    matched = match_source_catalogs(
+        sdss_file, source_file, match_radius=match_radius, outfile=match_outfile,
+        overwrite=overwrite, plot=plot
+        )
+    sources = matched.cat
 
     # TODO: remove after testing!
-    from astropy.table import Table
-    sources = Table.read(match_outfile)
+    # from astropy.table import Table
+    # sources = Table.read(match_outfile)
 
     print(f'Adding `visible_lines` to source file {source_outfile}')
 
@@ -81,7 +84,7 @@ def run_source_preprocessing(config):
 
     print(f'Adding `e` (ellipticity) to source file {source_outfile}')
     soures = compute_ellipticity(
-        sources
+        sources, plot=plot
         )
 
     return

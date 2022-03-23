@@ -5,6 +5,7 @@ import os
 from time import time
 from argparse import ArgumentParser
 import matplotlib.pyplot as plt
+import utils
 
 parser = ArgumentParser()
 
@@ -118,6 +119,7 @@ def match_clusters2sources(source_file, cluster_file, outfile=None,
         matched.write(outfile, overwrite=overwrite)
 
     if plot is True:
+        plotfile = os.path.join(utils.get_plot_dir(), 'cluster_matches.png')
         plot_separations(matched)
 
     return matched
@@ -147,11 +149,12 @@ def match_source_catalogs(source_photom, source_emission, outfile=None,
         matched.write(outfile, overwrite=overwrite)
 
     if plot is True:
-        plot_separations(matched)
+        plotfile = os.path.join(utils.get_plot_dir(), 'source_matches.png')
+        plot_separations(matched, plotfile)
 
     return matched
 
-def plot_separations(matched, size=(9,5)):
+def plot_separations(matched, outfile, size=(8,5)):
 
     sep = matched.cat['separation'] * 60. # arcmin
     N = len(sep)
@@ -164,7 +167,8 @@ def plot_separations(matched, size=(9,5)):
 
     plt.gcf().set_size_inches(size)
 
-    plt.show()
+    plt.savefig(outfile, bbox_inches='tight', dpi=300)
+    plt.close()
 
     return
 
@@ -181,8 +185,8 @@ def main(args):
         source_file, cluster_file, outfile, overwrite=overwrite
         )
 
-    if plot is True:
-        plot_separations(matched)
+    # if plot is True:
+    #     plot_separations(matched, plotfile)
 
     return 0
 

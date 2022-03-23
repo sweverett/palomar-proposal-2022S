@@ -25,6 +25,9 @@ def get_base_dir():
 def get_module_dir():
     return os.path.dirname(__file__)
 
+def get_plot_dir():
+    return os.path.join(get_base_dir(), 'plots')
+
 def get_data_dir():
     return os.path.join(get_base_dir(), 'data')
 
@@ -35,3 +38,5 @@ def get_test_dir():
 BASE_DIR = get_base_dir()
 MODULE_DIR = get_module_dir()
 TEST_DIR = get_test_dir()
+PLOT_DIR = get_plot_dir()
+DATA_DIR = get_data_dir()
