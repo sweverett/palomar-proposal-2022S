@@ -47,7 +47,7 @@ class MatchedCatalog(object):
         self.cat = None # matched catalog
         self.Nobjs = 0
 
-        self.table_names = None
+        self.table_names = table_names
 
         self._match()
 
@@ -144,6 +144,10 @@ def match_source_catalogs(source_photom, source_emission, outfile=None,
     print(f'photometry catalog: {matched.Ncat1}')
     print(f'emission catalog: {matched.Ncat2}')
     print(f'matches: {matched.Nobjs}')
+
+    # since we need to match to the cluster catalog later on
+    matched.cat.rename_column('RA_emission', 'RA')
+    matched.cat.rename_column('DEC_emission', 'DEC')
 
     if outfile is not None:
         matched.write(outfile, overwrite=overwrite)

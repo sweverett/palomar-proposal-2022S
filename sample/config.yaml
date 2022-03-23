@@ -21,7 +21,7 @@ overwrite: True
 # will want to skip airmass if already run (very slow)
 # run: ['cluster_preprocess', 'source_preprocess', 'match', 'shear']
 run: [
-      # 'source_preprocess',
+      'source_preprocess',
       'cluster_cuts',
       'source_cuts',
       'match',

@@ -1,7 +1,9 @@
+import os
 import numpy as np
 from astropy.table import Table
 import astropy.units as u
 import matplotlib.pyplot as plt
+import utils
 
 def compute_line_sb(sources, lines, fiber_diam, amp_col='AMPLITUDE', plot=False):
     '''
@@ -31,18 +33,22 @@ def compute_line_sb(sources, lines, fiber_diam, amp_col='AMPLITUDE', plot=False)
 
         flux_density = 0
         for indx in indices:
-            flux_density += sources[amp_col][:,indx] * amp_unit
+            flux_density += sources[amp_col][:,indx]
+
+        flux_density.unit = amp_unit
 
         # surface brightness
         sb = flux_density / fiber_area # flux_unit / arcsec^2
 
         # convert to AB mag
         z = sources['Z']
-        wav = wavelength * (1. + z) * u.nm # (config wavelength is in nm)
-        mag = flux_density.to(u.ABmag, u.spectral_density(wav))
+        wav = wavelength * (1. + z)
+        wav.unit = u.nm # (config wavelength is in nm)
+        mag = flux_density.convert_unit_to(u.ABmag, u.spectral_density(wav))
 
         # account for fiber area for sb
-        mag = mag + 2.5*np.log10(fiber_area)
+        # quick hack to make area correction work
+        mag = mag.value + 2.5*np.log10(fiber_area.value)
 
         sources[f'{line}_sb_flux'] = sb
         sources[f'{line}_sb_mag'] = mag

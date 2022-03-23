@@ -1,3 +1,4 @@
+import os
 from argparse import ArgumentParser
 from airmass import add_good_nights_col
 from emission_lines import compute_visible_lines, compute_line_sb
@@ -19,9 +20,6 @@ def run_cluster_preprocessing(config):
     cluster_outfile = config['cluster_outfile']
     overwrite = config['overwrite']
     plot = config['plot']
-
-    # make sure plot dir is present
-    utils.make_dir(utils.get_plot_dir())
 
     print(f'Adding `good_nights` to cluster file {cluster_file}...')
 
@@ -54,15 +52,15 @@ def run_source_preprocessing(config):
 
     match_outfile = source_file.replace('.fits', 'matched_sdss.fits')
     match_radius = eval(config['sdss']['match_radius'])
-    matched = match_source_catalogs(
-        sdss_file, source_file, match_radius=match_radius, outfile=match_outfile,
-        overwrite=overwrite, plot=plot
-        )
-    sources = matched.cat
+    # matched = match_source_catalogs(
+    #     sdss_file, source_file, match_radius=match_radius, outfile=match_outfile,
+    #     overwrite=overwrite, plot=plot
+    #     )
+    # sources = matched.cat
 
     # TODO: remove after testing!
-    # from astropy.table import Table
-    # sources = Table.read(match_outfile)
+    from astropy.table import Table
+    sources = Table.read(match_outfile)
 
     print(f'Adding `visible_lines` to source file {source_outfile}')
 
@@ -114,6 +112,12 @@ def main(args):
         overwrite = config['overwrite']
     except:
         overwrite = False
+
+    # make sure plot dir is present
+    plot_dir = utils.get_plot_dir()
+    print('plot_dir:', plot_dir)
+    utils.make_dir(plot_dir)
+    assert os.path.exists(plot_dir)
 
     #-----------------------------------------------------------------
     if 'cluster_preprocess' in config['run']:
