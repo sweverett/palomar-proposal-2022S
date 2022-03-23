@@ -3,20 +3,21 @@ from astropy.table import Table
 import astropy.units as u
 import matplotlib.pyplot as plt
 
-def compute_line_sb(sources, lines, fiber_diam, flux_col='FLUX', plot=False):
+def compute_line_sb(sources, lines, fiber_diam, amp_col='AMPLITUDE', plot=False):
     '''
     This function computes the surface brightness of each desired emission line
     using the fiber diam used for measurements in the source catalog
 
-    From SDSS website: flux units in 10-17 erg cm^-2 s^-1 Å^-1
+    From SDSS website: flux units in 10-17 erg cm^-2 s^-1
+    From SDSS website: amplitude units in 10-17 erg cm^-2 s^-1 Å^-1
     '''
 
     N = len(sources)
 
-    flux_unit = (1e-17) * u.erg / (u.cm**2 * u.s * u.AA)
+    amp_unit = (1e-17) * u.erg / (u.cm**2 * u.s * u.AA)
 
     # see https://www.sdss.org/dr12/algorithms/fluxcal/
-    sb_zp = 3631 * u.Jy
+    # sb_zp = 3631 * u.Jy # (don't actually need, astropy will do this)
 
     fiber_rad = (fiber_diam*u.arcsec) / 2.
     fiber_area = np.pi * fiber_rad**2
@@ -28,21 +29,71 @@ def compute_line_sb(sources, lines, fiber_diam, flux_col='FLUX', plot=False):
         if isinstance(indices, int):
             indices = [indices]
 
-        sb = 0
+        flux_density = 0
         for indx in indices:
-            sb += sources[flux_col][:,indx] / fiber_area # flux_unit / arcsec^2
+            flux_density += sources[amp_col][:,indx] * amp_unit
+
+        # surface brightness
+        sb = flux_density / fiber_area # flux_unit / arcsec^2
+
+        # convert to AB mag
+        z = sources['Z']
+        wav = wavelength * (1. + z) * u.nm # (config wavelength is in nm)
+        mag = flux_density.to(u.ABmag, u.spectral_density(wav))
+
+        # account for fiber area for sb
+        mag = mag + 2.5*np.log10(fiber_area)
 
         sources[f'{line}_sb_flux'] = sb
-        sources[f'{line}_sb_mag'] = -2.5*np.log10(sb / sb_zp)
+        sources[f'{line}_sb_mag'] = mag
 
         if min_sb is None:
             min_sb = sb
+            min_sb_mag = None
         else:
             min_sb = np.min([min_sb, sb], axis=0)
+            min_sb_mag = np.min([min_sb_mag, mag], axis=0)
 
     # keep track of minimum line sb
     sources['min_line_sb_flux'] = min_sb
-    sources['min_line_sb_mag'] = -2.5*np.log(min_sb / sb_zp)
+    sources['min_line_sb_mag'] = min_sb_mag
+
+    if plot is True:
+        print('Making sb line plots...')
+        for line in lines.keys():
+            plt.hist(sources[f'{line}_sb_flux'], ec='k', label=line)
+            plt.xlabel('Flux')
+            plt.ylabel('Counts')
+            plt.xscale('log')
+            plt.yscale('log')
+            plt.gcf().set_size_inches(8,5)
+
+        plotfile = os.path.join(utils.plot_dir(), 'sb_flux.png')
+        plt.savefig(plotfile, bbox_inches='tight', dpi=300)
+        plt.close()
+
+        for line in lines.keys():
+            plt.hist(sources[f'{line}_sb_mag'], ec='k', label=line)
+            plt.xlabel('AB Mag')
+            plt.ylabel('Counts')
+            plt.xscale('log')
+            plt.yscale('log')
+            plt.gcf().set_size_inches(8,5)
+
+        plotfile = os.path.join(utils.plot_dir(), 'sb_mag.png')
+        plt.savefig(plotfile, bbox_inches='tight', dpi=300)
+        plt.close()
+
+        plt.hist(sources[f'min_line_sb_mag'], ec='k')
+        plt.xlabel('Min AB Mag')
+        plt.ylabel('Counts')
+        plt.xscale('log')
+        plt.yscale('log')
+        plt.gcf().set_size_inches(8,5)
+
+        plotfile = os.path.join(utils.plot_dir(), 'min_sb_mag.png')
+        plt.savefig(plotfile, bbox_inches='tight', dpi=300)
+        plt.close()
 
     return sources
 
@@ -69,12 +120,8 @@ def compute_visible_lines(sources, lines, blue_lim, red_lim, plot=False):
 
         # to handle doublets, etc.
         try:
-            # print('wavelength before: ', wavelength)
-            # print('type(wavelength):', type(wavelength))
-            # print('type(wavelength):', type(wavelength))
             wavelength = eval(wavelength)
             wavelength = np.mean(wavelength)
-            # print('wavelength after: ', wavelength)
         except:
             pass
 
@@ -92,8 +139,11 @@ def compute_visible_lines(sources, lines, blue_lim, red_lim, plot=False):
         plt.ylabel('Counts')
         plt.yscale('log')
         plt.title(f'Visible lines between {blue_lim} & {red_lim} nm')
-        plt.gcf().set_size_inches(9,6)
-        plt.show()
+        plt.gcf().set_size_inches(8,5)
+
+        outfile = os.path.join(utils.get_plot_dir(), 'visible_lines.png')
+        plt.savefig(outfile, bbox_inches='tight', dpi=300)
+        plt.close()
 
     return sources
 
