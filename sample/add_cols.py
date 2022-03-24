@@ -75,12 +75,12 @@ def run_source_preprocessing(config):
         sources, lines, fiber_diam, plot=plot
         )
 
-    sources.write(source_outfile, overwrite=overwrite)
-
     print(f'Adding `e` (ellipticity) to source file {source_outfile}')
-    soures = compute_ellipticity(
+    sources = compute_ellipticity(
         sources, plot=plot
         )
+
+    sources.write(source_outfile, overwrite=overwrite)
 
     return
 
@@ -153,11 +153,11 @@ def main(args):
 
     #-----------------------------------------------------------------
     if 'match' in config['run']:
-        print(f'Matching clusters from {cluster_file} to ' +\
-              f'sources in {source_file}...')
+        print(f'Matching clusters from {cluster_cut_outfile} to ' +\
+              f'sources in {source_cut_outfile}...')
         match_radius = eval(config['match']['match_radius'])
         matched = match_clusters2sources(
-            source_outfile, cluster_outfile, outfile=match_outfile,
+            source_cut_outfile, cluster_cut_outfile, outfile=match_outfile,
             match_radius=match_radius, overwrite=overwrite, plot=plot
             )
         matches = matched.cat

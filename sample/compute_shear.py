@@ -87,10 +87,10 @@ def compute_shear(matched, zs_col='Z', zl_col='Z_LAMBDA', z_wedge=0.1,
     shears = np.zeros_like(z_source)
     for i, p in enumerate(pos):
         if background[i] == True:
-            pudb.set_trace()
+            # pudb.set_trace()
             shears[i] = halos[i].getShear(
-                    galsim.PositionD(p), z_source[i]
-                )
+                    galsim.PositionD(p, 0.0), z_source[i]
+                )[0] # only grab g1, which is gtan in this case
         else:
             shears[i] = 0.0
 

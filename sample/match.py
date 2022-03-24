@@ -114,6 +114,7 @@ def match_clusters2sources(source_file, cluster_file, outfile=None,
     T = time() - start
 
     print(f'matching took {T:.1f}s for {matched.Ncat1} reference sources')
+    print(f'found {matched.Nobjs} matches')
 
     if outfile is not None:
         matched.write(outfile, overwrite=overwrite)

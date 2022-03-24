@@ -93,14 +93,14 @@ def compute_line_sb(sources, lines, fiber_diam, amp_col='AMPLITUDE', plot=False)
 
         if min_sb is None:
             min_sb = sb
-            min_sb_mag = mag
+            max_sb_mag = mag
         else:
             min_sb = np.min([min_sb, sb], axis=0)
-            min_sb_mag = np.min([min_sb_mag, mag], axis=0)
+            max_sb_mag = np.max([max_sb_mag, mag], axis=0)
 
     # keep track of minimum line sb
     sources['min_line_sb_flux'] = min_sb
-    sources['min_line_sb_mag'] = min_sb_mag
+    sources['max_line_sb_mag'] = max_sb_mag
 
     if plot is True:
         print('Making sb line plots...')
@@ -128,14 +128,14 @@ def compute_line_sb(sources, lines, fiber_diam, amp_col='AMPLITUDE', plot=False)
         plt.savefig(plotfile, bbox_inches='tight', dpi=300)
         plt.close()
 
-        plt.hist(sources[f'min_line_sb_flux'], ec='k')
-        plt.xlabel('Min line flux')
+        plt.hist(sources[f'max_line_sb_mag'], ec='k')
+        plt.xlabel('Max line mag')
         plt.ylabel('Counts')
         plt.xscale('log')
         plt.yscale('log')
         plt.gcf().set_size_inches(8,5)
 
-        plotfile = os.path.join(utils.get_plot_dir(), 'min_sb_flux.png')
+        plotfile = os.path.join(utils.get_plot_dir(), 'max_sb_mag.png')
         plt.savefig(plotfile, bbox_inches='tight', dpi=300)
         plt.close()
 

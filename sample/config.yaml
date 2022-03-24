@@ -23,10 +23,10 @@ overwrite: True
 # run: ['cluster_preprocess', 'source_preprocess', 'match', 'shear']
 run: [
       # 'source_preprocess',
-      # 'cluster_cuts',
-      # 'source_cuts',
-      # 'match',
-      # 'shear',
+      'cluster_cuts',
+      'source_cuts',
+      'match',
+      'shear',
       'cuts',
       'rank'
       ]
@@ -51,18 +51,18 @@ line_sb:
   fiber_diam: 2 # arcsec
 
 cluster_cuts:
-  'good_nights':
+  good_nights_1.3:
     min: 1
 
 source_cuts:
   visible_lines:
     min: 1
-  min_line_sb:
-    max: 0.
-    min: 26.5 # need to incorporate 10% factor later
+  max_line_sb_mag:
+    min: 0.
+    max: 27. # need to incorporate 10% factor later
   FRACDEV:
     min: 0.0
-    max: 0.25
+    max: 0.2
   e:
     min: 0.0
     max: 0.8
@@ -78,5 +78,5 @@ match:
 
 cuts:
   gtan:
-    min: 0.00000001
-    # max: 0.2
+    min: -0.2
+    max: 0.2

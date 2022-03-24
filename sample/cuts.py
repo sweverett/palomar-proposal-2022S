@@ -15,7 +15,9 @@ def apply_cuts(catalog, cuts, lines=None):
     N = len(catalog)
     bad = np.zeros(N, dtype=bool)
 
+    Nbad = 0
     for col, val in cuts.items():
+        # pudb.set_trace()
         if col == 'FIT_WARNING':
             # have to deal w/ this separately as it is an array
             assert lines is not None
@@ -23,12 +25,12 @@ def apply_cuts(catalog, cuts, lines=None):
             for line in lines:
                 indx = emission_line_index[line]
                 try:
-                    bad[catalog[col][:,indx] <= val['min']] = True
+                    bad[catalog[col][:,indx] < val['min']] = True
                 except KeyError:
                     pass
 
                 try:
-                    bad[catalog[col][:,indx] >= val['max']] = True
+                    bad[catalog[col][:,indx] > val['max']] = True
                 except KeyError:
                     pass
 
@@ -37,16 +39,15 @@ def apply_cuts(catalog, cuts, lines=None):
                 except KeyError:
                     pass
 
-        if col in ['FRACDEV', 'AB_EXP', 'THETA_EXP']:
+        if col in ['FRACDEV', 'AB_EXP', 'THETA_EXP', 'e']:
             indx = 2 # r-band; ugriz
             try:
-                # pudb.set_trace()
-                bad[catalog[col][:,indx] <= val['min']] = True
+                bad[catalog[col][:,indx] < val['min']] = True
             except KeyError:
                 pass
 
             try:
-                bad[catalog[col][:,indx] >= val['max']] = True
+                bad[catalog[col][:,indx] > val['max']] = True
             except KeyError:
                 pass
 
@@ -56,12 +57,12 @@ def apply_cuts(catalog, cuts, lines=None):
                 pass
         else:
             try:
-                bad[catalog[col] <= val['min']] = True
+                bad[catalog[col] < val['min']] = True
             except KeyError:
                 pass
 
             try:
-                bad[catalog[col] >= val['max']] = True
+                bad[catalog[col] > val['max']] = True
             except KeyError:
                 pass
 
@@ -69,6 +70,13 @@ def apply_cuts(catalog, cuts, lines=None):
                 bad[catalog[col] != val['equal']] = True
             except KeyError:
                 pass
+        if col == 'gtan':
+            # additional cut on zero shear (i.e. foreground gal)
+            bad[catalog[col] == 0.0] = True
+
+        Nbad_new = len(bad[bad==1]) - Nbad
+        print(f'Removed {Nbad_new} objs due to {col} cuts')
+        Nbad += Nbad_new
 
     cut_catalog = catalog[~bad]
 
@@ -90,7 +98,6 @@ def apply_cluster_pre_cuts(cluster_file, cluster_cuts, outfile, overwrite=False,
 
     cut_cat = apply_cuts(cat, cluster_cuts)
 
-    utils.make_dir(os.path.dirname(outfile))
     cut_cat.write(outfile, overwrite=overwrite)
 
     if return_cat is True:
