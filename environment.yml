@@ -11,13 +11,15 @@ dependencies:
   - bleach=4.1.0=pyhd3eb1b0_0
   - brotli=1.0.9=hb1e8313_2
   - bzip2=1.0.8=h0d85af4_4
-  - ca-certificates=2022.2.1=hecd8cb5_0
-  - certifi=2020.6.20=pyhd3eb1b0_3
+  - c-ares=1.18.1=h0d85af4_0
+  - ca-certificates=2021.10.8=h033912b_0
   - charset-normalizer=2.0.4=pyhd3eb1b0_0
   - cycler=0.11.0=pyhd3eb1b0_0
   - decorator=5.1.1=pyhd3eb1b0_0
   - defusedxml=0.7.1=pyhd3eb1b0_0
+  - eigen=3.4.0=h940c156_0
   - executing=0.8.3=pyhd3eb1b0_0
+  - fftw=3.3.10=nompi_hf082fe4_102
   - fonttools=4.25.0=pyhd3eb1b0_0
   - freetype=2.11.0=hd8bbffd_0
   - giflib=5.2.1=haf1e3a3_0
@@ -34,22 +36,29 @@ dependencies:
   - jupyterlab=3.3.2=pyhd3eb1b0_0
   - jupyterlab_pygments=0.1.2=py_0
   - jupyterlab_server=2.10.3=pyhd3eb1b0_1
+  - krb5=1.19.3=hb98e516_0
   - lcms2=2.12=hf1fd2bf_0
   - libblas=3.9.0=13_osx64_openblas
   - libcblas=3.9.0=13_osx64_openblas
+  - libcurl=7.82.0=h9dce1e3_0
   - libcxx=13.0.1=hc203e6f_0
+  - libedit=3.1.20191231=h0678c8f_2
+  - libev=4.33=haf1e3a3_1
   - libffi=3.4.2=h0d85af4_5
   - libgfortran=5.0.0=9_3_0_h6c81a4c_23
   - libgfortran5=9.3.0=h6c81a4c_23
   - liblapack=3.9.0=13_osx64_openblas
+  - libnghttp2=1.47.0=hca56917_0
   - libopenblas=0.3.18=openmp_h3351f45_0
   - libpng=1.6.37=ha441bb4_0
   - libsodium=1.0.18=h1de35cc_0
+  - libssh2=1.10.0=hd3787cc_2
   - libtiff=4.2.0=h87d7836_0
   - libwebp=1.2.2=h56c3ce4_0
   - libwebp-base=1.2.2=hca72f7f_0
   - libzlib=1.2.11=h9173be1_1013
   - llvm-openmp=13.0.1=hcb1a161_1
+  - lsstdesc.coord=1.2.2=py310h2fea185_1
   - lz4-c=1.9.3=h23ab428_1
   - matplotlib-base=3.5.1=py310hfb0c5b7_1
   - matplotlib-inline=0.1.2=pyhd3eb1b0_2
@@ -59,10 +68,11 @@ dependencies:
   - nbformat=5.1.3=pyhd3eb1b0_0
   - ncurses=6.3=he49afe7_0
   - nest-asyncio=1.5.1=pyhd3eb1b0_0
-  - openssl=3.0.0=h0d85af4_2
+  - openssl=3.0.2=pl5321h5eb16cf_0
   - packaging=21.3=pyhd8ed1ab_0
   - pandocfilters=1.5.0=pyhd3eb1b0_0
   - parso=0.8.3=pyhd3eb1b0_0
+  - perl=5.32.1=2_h0d85af4_perl5
   - pexpect=4.8.0=pyhd3eb1b0_3
   - pickleshare=0.7.5=pyhd3eb1b0_1003
   - pip=22.0.4=pyhd8ed1ab_0
@@ -108,18 +118,23 @@ dependencies:
     - astroplan==0.8
     - astropy==5.0.2
     - brotlipy==0.7.0
+    - certifi==2021.10.8
     - cffi==1.15.0
     - cluster-toolkit==0.0.0
     - cryptography==36.0.0
     - debugpy==1.5.1
     - entrypoints==0.3
     - esutil==0.6.9
+    - fitsio==1.1.7
+    - future==0.18.2
+    - galsim==2.3.4
     - importlib-metadata==4.8.2
     - ipykernel==6.9.1
     - ipython==8.1.1
     - jedi==0.18.1
     - jupyter-core==4.9.2
     - kiwisolver==1.3.1
+    - lsstdesc-coord==1.2.2
     - markupsafe==2.0.1
     - matplotlib==3.5.1
     - mistune==0.8.4
@@ -127,6 +142,8 @@ dependencies:
     - notebook==6.4.8
     - numpy==1.22.3
     - pillow==9.0.1
+    - pybind11==2.9.1
+    - pybind11-global==2.9.1
     - pyerfa==2.0.0.1
     - pyrsistent==0.18.0
     - pysocks==1.7.1

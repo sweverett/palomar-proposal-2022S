@@ -1,5 +1,6 @@
 import os
 from argparse import ArgumentParser
+from astropy.table import Table
 from airmass import add_good_nights_col
 from emission_lines import compute_visible_lines, compute_line_sb
 from match import match_clusters2sources, match_source_catalogs
@@ -57,10 +58,6 @@ def run_source_preprocessing(config):
         overwrite=overwrite, plot=plot
         )
     sources = matched.cat
-
-    # TODO: remove after testing!
-    # from astropy.table import Table
-    # sources = Table.read(match_outfile)
 
     print(f'Adding `visible_lines` to source file {source_outfile}')
 
@@ -163,15 +160,15 @@ def main(args):
             source_outfile, cluster_outfile, outfile=match_outfile,
             match_radius=match_radius, overwrite=overwrite, plot=plot
             )
-        targets = matched.cat
+        matches = matched.cat
     else:
-        targets = Table.read(match_outfile)
+        matches = Table.read(match_outfile)
 
     #-----------------------------------------------------------------
-    if 'shear' in config['run']:
-        print(f'Matching clusters from {cluster_file} to ' +\
-              f'sources in {source_file}...')
-        targets = compute_shear(targets)
+    # if 'shear' in config['run']:
+    print(f'Matching clusters from {cluster_file} to ' +\
+            f'sources in {source_file}...')
+    targets = compute_shear(matches)
 
     if 'cuts' in config['run']:
         print(f'Applying post-cuts & saving to {targets_outfile}...')

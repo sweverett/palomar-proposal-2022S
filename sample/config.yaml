@@ -5,8 +5,8 @@ sdss_file: '/Users/sweveret/repos/palomar-proposal-2022S/data/sdss/photoPosPlate
 # sdss_file: '/Users/sweveret/repos/palomar-proposal-2022S/data/sdss/photoPosPlate-dr17_short_sample.fits'
 
 # pre-processed files w/ value-added cols
-cluster_outfile: '/Users/sweveret/repos/palomar-proposal-2022S/data/processed_redmapper_dr8_public_v6.3_catalog.fits'
-# cluster_outfile: '/Users/sweveret/repos/palomar-proposal-2022S/data/redmapper_dr8_public_v6.3_catalog_airmass_1.5.fits'
+# cluster_outfile: '/Users/sweveret/repos/palomar-proposal-2022S/data/processed_redmapper_dr8_public_v6.3_catalog.fits'
+cluster_outfile: '/Users/sweveret/repos/palomar-proposal-2022S/data/redmapper_dr8_public_v6.3_catalog_airmass_1.3.fits'
 source_outfile:  '/Users/sweveret/repos/palomar-proposal-2022S/data/processed_portsmouth_emlinekin-DR12.fits'
 
 # cats after initial cuts are applied
@@ -22,11 +22,11 @@ overwrite: True
 # will want to skip airmass if already run (very slow)
 # run: ['cluster_preprocess', 'source_preprocess', 'match', 'shear']
 run: [
-      'source_preprocess',
-      'cluster_cuts',
-      'source_cuts',
-      'match',
-      'shear',
+      # 'source_preprocess',
+      # 'cluster_cuts',
+      # 'source_cuts',
+      # 'match',
+      # 'shear',
       'cuts',
       'rank'
       ]
@@ -62,7 +62,7 @@ source_cuts:
     min: 26.5 # need to incorporate 10% factor later
   FRACDEV:
     min: 0.0
-    max: 0.1
+    max: 0.25
   e:
     min: 0.0
     max: 0.8
@@ -78,5 +78,5 @@ match:
 
 cuts:
   gtan:
-    min: 0.0001
-    max: 0.2
+    min: 0.00000001
+    # max: 0.2

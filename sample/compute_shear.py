@@ -3,6 +3,7 @@ from astropy.table import Table
 from astropy.cosmology import LambdaCDM
 from astropy import constants
 import os
+import galsim
 from argparse import ArgumentParser
 parser = ArgumentParser()
 import pudb
@@ -72,7 +73,7 @@ def compute_shear(matched, zs_col='Z', zl_col='Z_LAMBDA', z_wedge=0.1,
     halos = []
     i = 0
     for mass, z in zip(masses, z_lens):
-        if background[i] is True:
+        if background[i] == True:
             halos.append(
                 galsim.NFWHalo(mass, concentration, z, galsim.PositionD(0.,0.), Omega_m, Omega_lam)
                 )
@@ -85,9 +86,10 @@ def compute_shear(matched, zs_col='Z', zl_col='Z_LAMBDA', z_wedge=0.1,
     print('Shearing sources...')
     shears = np.zeros_like(z_source)
     for i, p in enumerate(pos):
-        if background[i] is True:
+        if background[i] == True:
+            pudb.set_trace()
             shears[i] = halos[i].getShear(
-                    galsim.PositionD(p, z_source[i])
+                    galsim.PositionD(p), z_source[i]
                 )
         else:
             shears[i] = 0.0
