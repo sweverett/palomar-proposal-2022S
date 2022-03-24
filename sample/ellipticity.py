@@ -1,4 +1,6 @@
 import numpy as np
+import os
+import matplotlib.pyplot as plt
 import utils
 
 def compute_ellipticity(sources, indx=2, plot=False):
@@ -25,7 +27,7 @@ def compute_ellipticity(sources, indx=2, plot=False):
         plt.savefig(plotfile, bbox_inches='tight', dpi=300)
         plt.close()
 
-        plt.hist(e, ec='k', bins=np.lispace(0,1,50))
+        plt.hist(e, ec='k', bins=np.linspace(0,1,50))
         plt.xlabel('Ellipticity (1-(A/B)^2) / (1+(A/B)^2)')
         plt.ylabel('Counts')
         plt.yscale('log')

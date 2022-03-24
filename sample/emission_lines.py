@@ -3,7 +3,9 @@ import numpy as np
 from astropy.table import Table
 import astropy.units as u
 import matplotlib.pyplot as plt
+from time import time
 import utils
+import pudb
 
 def compute_line_sb(sources, lines, fiber_diam, amp_col='AMPLITUDE', plot=False):
     '''
@@ -26,6 +28,12 @@ def compute_line_sb(sources, lines, fiber_diam, amp_col='AMPLITUDE', plot=False)
 
     min_sb = None
     for line, wavelength in lines.items():
+        # for doublets, etc.
+        try:
+            wavelength = np.mean(eval(wavelength))
+        except:
+            pass
+
         indices = emission_line_index[line]
 
         if isinstance(indices, int):
@@ -35,27 +43,57 @@ def compute_line_sb(sources, lines, fiber_diam, amp_col='AMPLITUDE', plot=False)
         for indx in indices:
             flux_density += sources[amp_col][:,indx]
 
+        # don't know what to do in this case...
+        flux_density[~np.isfinite(flux_density)] = -1.
+
         flux_density.unit = amp_unit
+
+
+        # clip flux value for mags
+        clip = 0.0001
+        clipped_density = flux_density.copy()
+        clipped_density[clipped_density <= 0] = clip
 
         # surface brightness
         sb = flux_density / fiber_area # flux_unit / arcsec^2
 
         # convert to AB mag
         z = sources['Z']
-        wav = wavelength * (1. + z)
-        wav.unit = u.nm # (config wavelength is in nm)
-        mag = flux_density.convert_unit_to(u.ABmag, u.spectral_density(wav))
+        wavelengths = wavelength * (1. + z)
+        wavelengths.unit = u.nm # (config wavelength is in nm)
+
+        # Can't get astropy to do this on an array, so slow loop it is
+        print('starting dumb flux to mag conversion...')
+        mag = np.zeros_like(flux_density)
+        start = time()
+        for i in range(N):
+            if i % 10000 == 0:
+                print(f'{i} of {N} ({i/N*100:.1f}%)')
+
+            wav =  wavelengths[i] * u.nm
+            try:
+                mag[i] = (clipped_density[i] * amp_unit).to(
+                    u.ABmag, u.spectral_density(wav)
+                    ).value
+            except AttributeError:
+                # some unresolved issue for rare masked constants...
+                mag[i] = 100.
+
+        T = time() - start
+        print(f'Loop took {T:.1f}s')
+
+        # mag = flux_density.convert_unit_to(u.ABmag, u.spectral_density(wav))
 
         # account for fiber area for sb
         # quick hack to make area correction work
-        mag = mag.value + 2.5*np.log10(fiber_area.value)
+        mag = mag + 2.5*np.log10(fiber_area.value)
 
         sources[f'{line}_sb_flux'] = sb
         sources[f'{line}_sb_mag'] = mag
 
         if min_sb is None:
             min_sb = sb
-            min_sb_mag = None
+            min_sb_mag = mag
         else:
             min_sb = np.min([min_sb, sb], axis=0)
             min_sb_mag = np.min([min_sb_mag, mag], axis=0)
@@ -74,7 +112,7 @@ def compute_line_sb(sources, lines, fiber_diam, amp_col='AMPLITUDE', plot=False)
             plt.yscale('log')
             plt.gcf().set_size_inches(8,5)
 
-        plotfile = os.path.join(utils.plot_dir(), 'sb_flux.png')
+        plotfile = os.path.join(utils.get_plot_dir(), 'sb_flux.png')
         plt.savefig(plotfile, bbox_inches='tight', dpi=300)
         plt.close()
 
@@ -86,18 +124,18 @@ def compute_line_sb(sources, lines, fiber_diam, amp_col='AMPLITUDE', plot=False)
             plt.yscale('log')
             plt.gcf().set_size_inches(8,5)
 
-        plotfile = os.path.join(utils.plot_dir(), 'sb_mag.png')
+        plotfile = os.path.join(utils.get_plot_dir(), 'sb_mag.png')
         plt.savefig(plotfile, bbox_inches='tight', dpi=300)
         plt.close()
 
-        plt.hist(sources[f'min_line_sb_mag'], ec='k')
-        plt.xlabel('Min AB Mag')
+        plt.hist(sources[f'min_line_sb_flux'], ec='k')
+        plt.xlabel('Min line flux')
         plt.ylabel('Counts')
         plt.xscale('log')
         plt.yscale('log')
         plt.gcf().set_size_inches(8,5)
 
-        plotfile = os.path.join(utils.plot_dir(), 'min_sb_mag.png')
+        plotfile = os.path.join(utils.get_plot_dir(), 'min_sb_flux.png')
         plt.savefig(plotfile, bbox_inches='tight', dpi=300)
         plt.close()
 

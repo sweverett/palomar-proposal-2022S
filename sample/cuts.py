@@ -3,6 +3,7 @@ import os
 from astropy.table import Table
 from emission_lines import emission_line_index
 import utils
+import pudb
 
 def apply_cuts(catalog, cuts, lines=None):
     '''
@@ -22,50 +23,51 @@ def apply_cuts(catalog, cuts, lines=None):
             for line in lines:
                 indx = emission_line_index[line]
                 try:
-                    bad[catalog[col][indx] <= value['min']] = True
-                except:
+                    bad[catalog[col][:,indx] <= val['min']] = True
+                except KeyError:
                     pass
 
                 try:
-                    bad[catalog[col][indx] >= val['max']] = True
-                except:
+                    bad[catalog[col][:,indx] >= val['max']] = True
+                except KeyError:
                     pass
 
                 try:
-                    bad[catlog[col][indx] != val['equal']] = True
-                except:
+                    bad[catalog[col][:,indx] != val['equal']] = True
+                except KeyError:
                     pass
 
         if col in ['FRACDEV', 'AB_EXP', 'THETA_EXP']:
             indx = 2 # r-band; ugriz
             try:
-                bad[catalog[col][indx] <= value['min']] = True
-            except:
+                # pudb.set_trace()
+                bad[catalog[col][:,indx] <= val['min']] = True
+            except KeyError:
                 pass
 
             try:
-                bad[catalog[col][indx] >= val['max']] = True
-            except:
+                bad[catalog[col][:,indx] >= val['max']] = True
+            except KeyError:
                 pass
 
             try:
-                bad[catlog[col][indx] != val['equal']] = True
-            except:
+                bad[catalog[col][:,indx] != val['equal']] = True
+            except KeyError:
                 pass
         else:
             try:
-                bad[catalog[col] <= value['min']] = True
-            except:
+                bad[catalog[col] <= val['min']] = True
+            except KeyError:
                 pass
 
             try:
                 bad[catalog[col] >= val['max']] = True
-            except:
+            except KeyError:
                 pass
 
             try:
-                bad[catlog[col] != val['equal']] = True
-            except:
+                bad[catalog[col] != val['equal']] = True
+            except KeyError:
                 pass
 
     cut_catalog = catalog[~bad]
@@ -120,13 +122,10 @@ def apply_source_pre_cuts(source_file, source_cuts, lines, outfile, overwrite=Fa
     else:
         return
 
-def apply_post_cuts(matched_file, cuts, outfile, overwrite=False, return_cat=False):
+def apply_post_cuts(targets, cuts, outfile, overwrite=False, return_cat=False):
 
-    cat = Table.read(matched_file)
+    cut_cat = apply_cuts(targets, cuts)
 
-    cut_cat = apply_cuts(cat, cuts)
-
-    utils.make_dir(os.dirname(outfile))
     cut_cat.write(outfile, overwrite=overwrite)
 
     if return_cat is True:

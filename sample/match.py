@@ -120,7 +120,7 @@ def match_clusters2sources(source_file, cluster_file, outfile=None,
 
     if plot is True:
         plotfile = os.path.join(utils.get_plot_dir(), 'cluster_matches.png')
-        plot_separations(matched)
+        plot_separations(matched, plotfile)
 
     return matched
 

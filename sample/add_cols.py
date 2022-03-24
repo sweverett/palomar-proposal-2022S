@@ -52,15 +52,15 @@ def run_source_preprocessing(config):
 
     match_outfile = source_file.replace('.fits', 'matched_sdss.fits')
     match_radius = eval(config['sdss']['match_radius'])
-    # matched = match_source_catalogs(
-    #     sdss_file, source_file, match_radius=match_radius, outfile=match_outfile,
-    #     overwrite=overwrite, plot=plot
-    #     )
-    # sources = matched.cat
+    matched = match_source_catalogs(
+        sdss_file, source_file, match_radius=match_radius, outfile=match_outfile,
+        overwrite=overwrite, plot=plot
+        )
+    sources = matched.cat
 
     # TODO: remove after testing!
-    from astropy.table import Table
-    sources = Table.read(match_outfile)
+    # from astropy.table import Table
+    # sources = Table.read(match_outfile)
 
     print(f'Adding `visible_lines` to source file {source_outfile}')
 
@@ -103,6 +103,8 @@ def main(args):
     source_cut_outfile = config['source_cut_outfile']
     match_outfile = config['match_outfile']
 
+    targets_outfile = config['targets_outfile']
+
     try:
         plot = config['plot']
     except:
@@ -115,9 +117,13 @@ def main(args):
 
     # make sure plot dir is present
     plot_dir = utils.get_plot_dir()
+    out_dir = utils.get_out_dir()
     print('plot_dir:', plot_dir)
+    print('out_dir:', out_dir)
     utils.make_dir(plot_dir)
+    utils.make_dir(out_dir)
     assert os.path.exists(plot_dir)
+    assert os.path.exists(out_dir)
 
     #-----------------------------------------------------------------
     if 'cluster_preprocess' in config['run']:
@@ -157,27 +163,35 @@ def main(args):
             source_outfile, cluster_outfile, outfile=match_outfile,
             match_radius=match_radius, overwrite=overwrite, plot=plot
             )
+        targets = matched.cat
     else:
-        matched = Table.read(match_outfile)
+        targets = Table.read(match_outfile)
 
     #-----------------------------------------------------------------
     if 'shear' in config['run']:
         print(f'Matching clusters from {cluster_file} to ' +\
               f'sources in {source_file}...')
-        matched = compute_shear(matched)
-        cat_cuts = config['cuts']
+        targets = compute_shear(targets)
 
-        apply_post_cuts(
-            matched, cat_cuts, outfile=targets_outfile
-            )
+    if 'cuts' in config['run']:
+        print(f'Applying post-cuts & saving to {targets_outfile}...')
+
+        cat_cuts = config['cuts']
+        targets = apply_post_cuts(
+            targets, cat_cuts, outfile=targets_outfile, return_cat=True,
+            overwrite=overwrite
+        )
+
+        Ntargets = len(targets)
+        print(f'Success! Final target list has {Ntargets} sources')
+
+        if Ntargets > 0:
+            print(':)')
+        else:
+            print(':(')
 
     return 0
 
 if __name__ == '__main__':
     args = parser.parse_args()
     rc = main(args)
-
-    if rc == 0:
-        print('All columns added succesfully!')
-    else:
-        print(f'Script failed with a rc of {rc}')

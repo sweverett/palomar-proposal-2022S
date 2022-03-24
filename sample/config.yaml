@@ -1,19 +1,20 @@
 # original files
-cluster_file: '/Users/sweveret/repos/palomar-proposal-2022S/data/redmapper_dr8_public_v6.3_catalog_airmass_1.5.fits'
+cluster_file: '/Users/sweveret/repos/palomar-proposal-2022S/data/redmapper_dr8_public_v6.3_catalog_airmass_1.3.fits'
 source_file:  '/Users/sweveret/repos/palomar-proposal-2022S/data/portsmouth_emlinekin_full-DR12.fits'
-sdss_file: '/Users/sweveret/repos/palomar-proposal-2022S/data/sdss/photoPosPlate-dr17.fits'
+sdss_file: '/Users/sweveret/repos/palomar-proposal-2022S/data/sdss/photoPosPlate-dr17_short.fits'
+# sdss_file: '/Users/sweveret/repos/palomar-proposal-2022S/data/sdss/photoPosPlate-dr17_short_sample.fits'
 
 # pre-processed files w/ value-added cols
-# cluster_outfile = '/Users/sweveret/repos/palomar-proposal-2022S/data/processed_redmapper_dr8_public_v6.3_catalog.fits'
-cluster_outfile: '/Users/sweveret/repos/palomar-proposal-2022S/data/redmapper_dr8_public_v6.3_catalog_airmass_1.5.fits'
+cluster_outfile: '/Users/sweveret/repos/palomar-proposal-2022S/data/processed_redmapper_dr8_public_v6.3_catalog.fits'
+# cluster_outfile: '/Users/sweveret/repos/palomar-proposal-2022S/data/redmapper_dr8_public_v6.3_catalog_airmass_1.5.fits'
 source_outfile:  '/Users/sweveret/repos/palomar-proposal-2022S/data/processed_portsmouth_emlinekin-DR12.fits'
 
 # cats after initial cuts are applied
 cluster_cut_outfile: '/Users/sweveret/repos/palomar-proposal-2022S/data/cut_redmapper_dr8_public_v6.3_catalog.fits'
 source_cut_outfile : '/Users/sweveret/repos/palomar-proposal-2022S/data/cut_portsmouth_emlinekin-DR12.fits'
 
-match_outfile: '/Users/sweveret/repos/palomar-proposal-2022S/data/out/palomar_matched_catalog.fits'
-targets_outfile: '/Users/sweveret/repos/palomar-proposal-2022S/data/out/palomar_target_list.fits'
+match_outfile: '/Users/sweveret/repos/palomar-proposal-2022S/out/palomar_matched_catalog.fits'
+targets_outfile: '/Users/sweveret/repos/palomar-proposal-2022S/out/palomar_target_list.fits'
 
 plot: True
 overwrite: True
@@ -65,8 +66,6 @@ source_cuts:
   e:
     min: 0.0
     max: 0.8
-  # AB_EXP:
-  #   min: 1 # update; dummy value
   THETA_EXP:
     min: 1 # major axis scale radius (arcsec)
   SPEC_PRIMARY:
@@ -79,5 +78,5 @@ match:
 
 cuts:
   gtan:
-    min: 0.0
+    min: 0.0001
     max: 0.2

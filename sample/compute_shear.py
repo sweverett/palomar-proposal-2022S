@@ -5,6 +5,7 @@ from astropy import constants
 import os
 from argparse import ArgumentParser
 parser = ArgumentParser()
+import pudb
 
 parser.add_argument('config_file', type=str,
                     help='Filepath for config file')
@@ -24,7 +25,7 @@ def assign_masses(matched, log_M0=14.338, alpha=1.34, lam0=40.):
        -- lam0 = 40 (pivot)
     '''
 
-    richness = matched['LAMBDA']
+    richness = matched['LAMBDA_cluster']
 
     log10_mass = log_M0 + alpha * np.log10(richness / lam0)
     mass = 10**(log10_mass)
@@ -56,7 +57,7 @@ def compute_shear(matched, zs_col='Z', zl_col='Z_LAMBDA', z_wedge=0.1,
     # so just use 3 for now.
     '''
 
-    z_source = matched[zs_cl]
+    z_source = matched[zs_col]
     z_lens = matched[zl_col]
 
     print('Assigning masses...')
@@ -69,6 +70,7 @@ def compute_shear(matched, zs_col='Z', zl_col='Z_LAMBDA', z_wedge=0.1,
 
     print('Creating NFW halos...')
     halos = []
+    i = 0
     for mass, z in zip(masses, z_lens):
         if background[i] is True:
             halos.append(
@@ -76,6 +78,7 @@ def compute_shear(matched, zs_col='Z', zl_col='Z_LAMBDA', z_wedge=0.1,
                 )
         else:
             halos.append(np.nan)
+        i += 1
 
     pos = matched['separation'] * 3600. # convert to arcsec
 
