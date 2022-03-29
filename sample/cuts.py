@@ -58,18 +58,25 @@ def apply_cuts(catalog, cuts, lines=None):
         else:
             try:
                 bad[catalog[col] < val['min']] = True
+            except TypeError:
+                bad[catalog[col] < eval(val['min'])] = True
             except KeyError:
                 pass
 
             try:
                 bad[catalog[col] > val['max']] = True
+            except TypeError:
+                bad[catalog[col] > eval(val['max'])] = True
             except KeyError:
                 pass
 
             try:
                 bad[catalog[col] != val['equal']] = True
+            except TypeError:
+                bad[catalog[col] != eval(val['equal'])] = True
             except KeyError:
                 pass
+
         if col == 'gtan':
             # additional cut on zero shear (i.e. foreground gal)
             bad[catalog[col] == 0.0] = True
