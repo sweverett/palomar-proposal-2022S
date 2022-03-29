@@ -48,7 +48,6 @@ def compute_line_sb(sources, lines, fiber_diam, amp_col='AMPLITUDE', plot=False)
 
         flux_density.unit = amp_unit
 
-
         # clip flux value for mags
         clip = 0.0001
         clipped_density = flux_density.copy()

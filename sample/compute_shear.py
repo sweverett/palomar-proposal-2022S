@@ -63,6 +63,7 @@ def compute_shear(matched, zs_col='Z', zl_col='Z_LAMBDA', z_wedge=0.1,
 
     print('Assigning masses...')
     masses = assign_masses(matched)
+    # masses = 10**matched['MASS']
 
     # Use GalSim to predict the tangential shear at the position of each source.
     background = z_source > z_lens + z_wedge
