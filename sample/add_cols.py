@@ -18,6 +18,7 @@ parser.add_argument('config_file', type=str,
 
 def run_cluster_preprocessing(config):
 
+    cluster_file = config['cluster_file']
     cluster_outfile = config['cluster_outfile']
     overwrite = config['overwrite']
     plot = config['plot']
@@ -31,7 +32,7 @@ def run_cluster_preprocessing(config):
     add_good_nights_col(
         cluster_file, start_date, end_date, utc_offset,
         min_airmass=min_airmass, overwrite=overwrite,
-        outfile=outfile, plot=plot
+        outfile=cluster_outfile, plot=plot
         )
 
     return
